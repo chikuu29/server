@@ -24,3 +24,24 @@ def verify_jwt_token(token):
         # Token is invalid
         return None
 
+def validate_jwt_token(jwt_token, secretKey):
+    try:
+        # print('jwt_token--->', jwt_token, 'secretKey---', secretKey)
+        decoded_token = jwt.decode(jwt_token, secretKey, algorithms=['HS256'])
+        # print('exp--->', decoded_token)
+
+        # Convert 'exp' value to datetime.datetime
+        exp_datetime = datetime.datetime.utcfromtimestamp(decoded_token['exp'])
+
+        # print('cur time--->', datetime.datetime.utcnow())
+        if exp_datetime < datetime.datetime.utcnow():
+            raise jwt.ExpiredSignatureError('Token has expired')
+
+        return decoded_token
+    except jwt.ExpiredSignatureError:
+        print("Error: jwt token has expired.")
+        return None
+    except jwt.InvalidTokenError:
+        print("Error: Invalid token.")
+        return None
+

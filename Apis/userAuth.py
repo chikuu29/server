@@ -7,7 +7,7 @@ import bcrypt
 from services.commonService import *
 # Create your views here.
 
-
+secreatKey = "your_secret_key"
 class RegisterAPIView(APIView):
     def post(self, request):
         try:
@@ -78,7 +78,11 @@ class LoginAPIView(APIView):
                 print("User exists", user)
                 if bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
                     print("Password is correct")
-                    token = create_jwt_token(email)
+                    payLoad = {
+                        "email": email,
+                        "role":user['role']
+                    }
+                    token = create_jwt_token(payLoad)
                     response = Response(
                         {
                             "message": "Login successful",
@@ -111,5 +115,16 @@ class LoginAPIView(APIView):
                     return Response({"message": "Invalid email or password", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
             else:
                 return Response({"message": "Invalid email or password", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
+        except Exception as e:
+            return Response({"message": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+        
+class checkLoginStatus(APIView):
+    def get(self, request):
+        try:
+            # Get data from request
+            token = request.headers['Authorization'].split(' ')[1]
+            print
+            if not email:
+                return Response({"error": "Please provide both email and password"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"message": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
