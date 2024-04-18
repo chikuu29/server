@@ -91,7 +91,40 @@ class JobResumeDynamicQuery(APIView):
         except Exception as e:
             return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
        
+
+
+
+class getJobPost(APIView):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
  
+    def post(self, request):
+        try:
+            query = request.data.get('query')
+            collection = request.data.get('collection')
+            projection = request.data.get('projection')
+            if   not collection:
+                return Response({"error": "Please provide a collection Name"}, status=status.HTTP_400_BAD_REQUEST)
+           
+            self.collection = db[collection]
+            # Insert document into MongoDB
+            result = self.collection.find(query, projection)
+            list_cursor = list(result)
+            serialized_result = []
+            for item in list_cursor:
+                item['_id'] = str(item['_id'])  # Convert ObjectId to string
+                serialized_result.append(item)
+
+            if serialized_result:
+                return Response(serialized_result, status=status.HTTP_200_OK)
+            else:
+                print("No documents found")
+                return Response([], status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+ 
+    
+
 class JobResumeAggregationQuery(APIView):
     def post(self, request):
         try:

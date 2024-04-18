@@ -31,10 +31,10 @@ def validate_jwt_token(jwt_token, secretKey):
         # print('exp--->', decoded_token)
 
         # Convert 'exp' value to datetime.datetime
-        exp_datetime = datetime.datetime.utcfromtimestamp(decoded_token['exp'])
+        exp_datetime = datetime.utcfromtimestamp(decoded_token['exp'])
 
         # print('cur time--->', datetime.datetime.utcnow())
-        if exp_datetime < datetime.datetime.utcnow():
+        if exp_datetime < datetime.utcnow():
             raise jwt.ExpiredSignatureError('Token has expired')
 
         return decoded_token

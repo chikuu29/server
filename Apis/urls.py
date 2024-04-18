@@ -7,8 +7,10 @@ urlpatterns = [
     path('login', LoginAPIView.as_view(), name='login'),
     path('logout',LogoutView.as_view(),name='logout'),
     # /session# /session
-    path('auth/dynaQuery', JobResumeDynamicQuery.as_view(), name='dynaQuery'),
-    path('auth/dynaAggregation', JobResumeAggregationQuery.as_view(), name='dynaAggregation'),
-    path('auth/session',checkLoginStatus.as_view(),name='session'),
+    path('dynaQuery', JobResumeDynamicQuery.as_view(), name='dynaQuery'),
+    path('dynaAggregation', JobResumeAggregationQuery.as_view(), name='dynaAggregation'),
+    path('getJobResumePost', getJobPost.as_view(), name='getJobResumePost'),
+
+    path('session',checkLoginStatus.as_view(),name='session'),
 ]
 
