@@ -17,7 +17,7 @@ class RegisterAPIView(APIView):
             # confirm_password = request.data.get('confirmPswd')
             role = request.data.get('role')
             if(not email or not password or not role):
-                return Response({"error": "Please fill in all fields"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Please fill in all fields","success":False}, status=status.HTTP_400_BAD_REQUEST)
 
             # Check if passwords match
             # if password != confirm_password:
@@ -28,7 +28,7 @@ class RegisterAPIView(APIView):
 
             # Check if email already exists
             if collection.find_one({"email": email}):
-                return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Email already exists","success":False}, status=status.HTTP_400_BAD_REQUEST)
 
             # Insert new user into MongoDB
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -42,7 +42,7 @@ class RegisterAPIView(APIView):
             # Return success response
             return Response({"message": "User registered successfully", "email":email,'success':True}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e),'success':False}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "An error occurred: " + str(e),'success':False}, status=status.HTTP_400_BAD_REQUEST)
         
 
 
@@ -96,8 +96,8 @@ class LoginAPIView(APIView):
                         )
                     return response
                 else:
-                    return Response({"error": "Invalid email or password", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
+                    return Response({"message": "Invalid email or password", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
             else:
-                return Response({"error": "Invalid email or password", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
+                return Response({"message": "Invalid email or password", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
