@@ -15,7 +15,7 @@ class UserValidationMiddleware:
             if 'Authorization' not in request.headers:
                 return JsonResponse({"error": "Authorization header missing"}, status=status.HTTP_401_UNAUTHORIZED)
 
-            token = request.headers['Authorization'].split(' ')[1]
+            token = request.cookies['jwt_token'].split(' ')[1]
 
             try:
                 payload = jwt.decode(token, 'your_secret_key', algorithms=['HS256'])
