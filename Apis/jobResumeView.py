@@ -17,33 +17,34 @@ class JobResumeDynamicQuery(APIView):
             collection = request.data.get('collection')
             projection = request.data.get('projection')
             if not query or  not collection or  not projection:
-                return Response({"error": "Please provide  query/collection/projection"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide  query/collection/projection", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
             self.collection = db[collection]
            
             # Execute MongoDB query with projection
             result = self.collection.find(query, projection)
             listCursor = list(result)
             if len(listCursor) >0:
-                return Response(listCursor, status=status.HTTP_200_OK)
+                returnObj={"data":listCursor,'success':True,'message':"Documents found"}
+                return Response(returnObj, status=status.HTTP_200_OK)
             else:
-                print("No documents found")
-                return Response([], status=status.HTTP_200_OK)
+                returnObj={"data":listCursor,'success':False,'message':"No documents found"}
+                return Response(returnObj, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
  
     def post(self, request):
         try:
             document = request.data.get('document')
             collection = request.data.get('collection')
             if not document or  not collection:
-                return Response({"error": "Please provide a document/collection to insert"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide a document/collection to insert", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
            
             self.collection = db[collection]
             # Insert document into MongoDB
             result = self.collection.insert_one(document)
-            return Response({"message": "Document inserted successfully", "inserted_id": str(result.inserted_id)}, status=status.HTTP_201_CREATED)
+            return Response({"message": "Document inserted successfully", "inserted_id": str(result.inserted_id), 'success': True}, status=status.HTTP_201_CREATED)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
  
     def put(self, request):
         try:
@@ -51,15 +52,15 @@ class JobResumeDynamicQuery(APIView):
             update = request.data.get('update')
             collection = request.data.get('collection')
             if not query or not update or  not collection:
-                return Response({"error": "Please provide both query and update fields and collection"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide both query and update fields and collection", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
            
             # Update document in MongoDB
            
             collection = request.data.get('collection')
             result = self.collection.update_one(query, update)
-            return Response({"message": "Document updated successfully", "modified_count": result.modified_count}, status=status.HTTP_200_OK)
+            return Response({"message": "Document updated successfully", "modified_count": result.modified_count, 'success': False}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
  
     def patch(self, request):
         try:
@@ -67,29 +68,29 @@ class JobResumeDynamicQuery(APIView):
             update = request.data.get('update')# use set keyword in update parameter data
             collection = request.data.get('collection')
             if not query or not update or  not collection:
-                return Response({"error": "Please provide both query and update fields and collection"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide both query and update fields and collection", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
            
             # Update document in MongoDB
            
             collection = request.data.get('collection')
             result = self.collection.update_one(query, update)
-            return Response({"message": "Document updated successfully", "modified_count": result.modified_count}, status=status.HTTP_200_OK)
+            return Response({"message": "Document updated successfully", "modified_count": result.modified_count, 'success': True}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
  
     def delete(self, request):
         try:
             query = request.data.get('query')
             collection = request.data.get('collection')
             if not query or  not collection:
-                return Response({"error": "Please provide a query/collection"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide a query/collection", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
            
             self.collection = db[collection]
             # Delete document from MongoDB
             result = self.collection.delete_one(query)
-            return Response({"message": "Document deleted successfully", "deleted_count": result.deleted_count}, status=status.HTTP_200_OK)
+            return Response({"message": "Document deleted successfully", "deleted_count": result.deleted_count, 'success': True}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
        
  
 class JobResumeAggregationQuery(APIView):
@@ -98,7 +99,7 @@ class JobResumeAggregationQuery(APIView):
             pipeline = request.data.get('pipeline')
             collection = request.data.get('collection')
             if not pipeline or not collection:
-                return Response({"error": "Please provide a pipeline and collection"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide a pipeline and collection", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
            
             self.collection = db[collection]
            
@@ -108,9 +109,35 @@ class JobResumeAggregationQuery(APIView):
             # Convert aggregation result to a list and return
             list_result = list(result)
             if len(list_result) > 0:
-                return Response(list_result, status=status.HTTP_200_OK)
+                returnObj = {'success': True, 'data': list_result,'message': "Aggregation query executed successfully"}
+                return Response(returnObj, status=status.HTTP_200_OK)
             else:
+                returnObj = {'success': False, 'data': [],'message': "No documents found"}
                 print("No documents found")
                 return Response([], status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+class JobsResumeView(APIView):
+    def get(self,request):
+        try:
+            collectionName = request.GET.get('collection')
+            if not collectionName:
+                return Response({"error": "Please provide a collection name", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+            self.collection = db[collectionName]
+
+            # Get all documents from MongoDB
+            result = self.collection.find()
+            all_documents = list(result)
+            if len(all_documents) > 0:
+                returnObj = {'success': True, 'data': all_documents,'message': "Documents retrieved successfully"}
+                return Response(returnObj, status=status.HTTP_200_OK)
+            else:
+                returnObj = {'success': False, 'data': [],'message': "No documents found"}
+                print("No documents found")
+                return Response(returnObj, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
+
+
+        

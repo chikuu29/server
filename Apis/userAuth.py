@@ -67,7 +67,7 @@ class LoginAPIView(APIView):
             password = request.data.get('password')
             print
             if not email or not password:
-                return Response({"error": "Please provide both email and password"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide both email and password", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
 
             # Connect to MongoDB
             collection = db['users']
@@ -124,7 +124,7 @@ class checkLoginStatus(APIView):
             # Get data from request
             token = request.cookies['jwt_token'].split(' ')[1]
             if not token:
-                return Response({"error": "Please provide token"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"error": "Please provide token", 'success': False}, status=status.HTTP_400_BAD_REQUEST)
             tokenData = validate_jwt_token(token,secreatKey)['token']
             if tokenData:
                 return Response({"message": "Login successful", "email":tokenData['email'],"role":tokenData['role'],'success': True}, status=status.HTTP_200_OK)
