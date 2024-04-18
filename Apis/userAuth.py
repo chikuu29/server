@@ -122,9 +122,13 @@ class checkLoginStatus(APIView):
     def get(self, request):
         try:
             # Get data from request
-            token = request.headers['Authorization'].split(' ')[1]
-            print
-            if not email:
-                return Response({"error": "Please provide both email and password"}, status=status.HTTP_400_BAD_REQUEST)
+            token = request.cookies['jwt_token'].split(' ')[1]
+            if not token:
+                return Response({"error": "Please provide token"}, status=status.HTTP_400_BAD_REQUEST)
+            tokenData = validate_jwt_token(token,secreatKey)['token']
+            if tokenData:
+                return Response({"message": "Login successful", "email":tokenData['email'],"role":tokenData['role'],'success': True}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Invalid token", 'success': False}, status=status.HTTP_401_UNAUTHORIZED)
         except Exception as e:
             return Response({"message": "An error occurred: " + str(e), 'success': False}, status=status.HTTP_400_BAD_REQUEST)
