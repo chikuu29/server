@@ -45,6 +45,18 @@ class RegisterAPIView(APIView):
             return Response({"message": "An error occurred: " + str(e),'success':False}, status=status.HTTP_400_BAD_REQUEST)
         
 
+class LogoutView(APIView):
+    def post(self,request):
+        response = Response(
+            {
+            "message": "Loginout successful"
+            }, status=status.HTTP_200_OK )
+        response.delete_cookie(
+            key="jwt_token",
+            samesite='None',
+            path="/"
+            )
+        return response
 
 
 class LoginAPIView(APIView):
