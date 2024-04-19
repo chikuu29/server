@@ -147,3 +147,63 @@ class JobResumeAggregationQuery(APIView):
                 return Response([], status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class getallResume(APIView):
+     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+ 
+     def get(self, request):
+        try:
+           
+            self.collection = db["resume"]
+           
+            # Execute MongoDB query with projection
+            # result = self.collection.find({}, {})
+            # listCursor = list(result)
+            result = self.collection.find({}, {})
+            # result = self.collection.find(query, projection)
+            list_cursor = list(result)
+            serialized_result = []
+            for item in list_cursor:
+                item['_id'] = str(item['_id'])  # Convert ObjectId to string
+                serialized_result.append(item)
+
+            if serialized_result:
+                return Response(serialized_result, status=status.HTTP_200_OK)
+            else:
+                print("No documents found")
+                return Response([], status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+ 
+
+
+class getallJob(APIView):
+     def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+ 
+     def get(self, request):
+        try:
+           
+            self.collection = db["job_post"]
+           
+            # Execute MongoDB query with projection
+            # result = self.collection.find({}, {})
+            # listCursor = list(result)
+            result = self.collection.find({}, {})
+            # result = self.collection.find(query, projection)
+            list_cursor = list(result)
+            serialized_result = []
+            for item in list_cursor:
+                item['_id'] = str(item['_id'])  # Convert ObjectId to string
+                serialized_result.append(item)
+
+            if serialized_result:
+                return Response(serialized_result, status=status.HTTP_200_OK)
+            else:
+                print("No documents found")
+                return Response([], status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+ 
