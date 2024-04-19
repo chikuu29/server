@@ -51,15 +51,15 @@ class JobResumeDynamicQuery(APIView):
             update = request.data.get('update')
             collection = request.data.get('collection')
             if not query or not update or  not collection:
-                return Response({"error": "Please provide both query and update fields and collection"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"message": "Please provide both query and update fields and collection"}, status=status.HTTP_400_BAD_REQUEST)
            
+            self.collection = db[collection]
             # Update document in MongoDB
-           
-            collection = request.data.get('collection')
             result = self.collection.update_one(query, update)
+            print(f"hii",result)
             return Response({"message": "Document updated successfully", "modified_count": result.modified_count}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
  
     def patch(self, request):
         try:
@@ -73,7 +73,12 @@ class JobResumeDynamicQuery(APIView):
            
             collection = request.data.get('collection')
             result = self.collection.update_one(query, update)
-            return Response({"message": "Document updated successfully", "modified_count": result.modified_count}, status=status.HTTP_200_OK)
+            if result.matched_count == 0:  # If no document matched the query
+                return Response({"message": "No document matched the query"}, status=status.HTTP_404_NOT_FOUND)
+            elif result.modified_count == 0:  # If no document was actually modified
+                return Response({"message": "No document was updated"}, status=status.HTTP_200_OK)
+            else:
+                return Response({"message": "Document updated successfully", "modified_count": result.modified_count}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
  
