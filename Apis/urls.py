@@ -7,7 +7,8 @@ urlpatterns = [
     path('login', LoginAPIView.as_view(), name='login'),
     path('logout',LogoutView.as_view(),name='logout'),
     # /session# /session
-    path('authTn/dynaQuery', JobResumeDynamicQuery.as_view(), name='dynaQuery'),
+    path('authTn/dynaQuery/', JobResumeDynamicQuery.as_view(), name='dynaQuery'),  # Base URL without parameters
+    path('authTn/dynaQuery/<str:collection>/', JobResumeDynamicQuery.as_view(), name='dynaQuery_with_param'),
     path('authTn/dynaAggregation', JobResumeAggregationQuery.as_view(), name='dynaAggregation'),
     path('session',checkLoginStatus.as_view(),name='session'),
     path('JobsResumeView',JobsResumeView.as_view(),name='JobsResumeView'),
