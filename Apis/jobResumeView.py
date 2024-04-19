@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from NLP_Model.nlp_for_find_job import findtoptenjobforresume
 from db.mongo import db
 import bcrypt
 from services.commonService import *
@@ -192,7 +193,6 @@ class getallJob(APIView):
         try:
            
             self.collection = db["job_post"]
-           
             # Execute MongoDB query with projection
             # result = self.collection.find({}, {})
             # listCursor = list(result)
@@ -211,4 +211,69 @@ class getallJob(APIView):
                 return Response([], status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+ 
+
+
+
+
+
+class getTopTenJobPost(APIView):
+      def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+      def post(self,request):
+        try:
+           
+            self.collection = db["job_post"]
+            resume_id = request.data.get('resume_id')
+            # Execute MongoDB query with projection
+            # result = self.collection.find({}, {})
+            # listCursor = list(result)
+            print("resume_id",resume_id)
+            if not resume_id:
+                return Response({"message": "resume_id For Run NLP"}, status=status.HTTP_400_BAD_REQUEST)
+            # result = self.collection.find({}, {})
+
+
+            print(f"Callinf NLP Model")
+
+            nlpResponce=findtoptenjobforresume(resume_id)
+            print(nlpResponce)
+            if nlpResponce and nlpResponce['success']:
+               job_ids = [entry['job_id'] for entry in nlpResponce['result'] if entry.get('job_id')]
+            else:
+                return Response({"message": "NLP RUN UNSUCCESSFULL", "nlpresponce": nlpResponce, "success": False},
+                                status=status.HTTP_200_OK)
+
+            print(f"data", job_ids)
+            result = self.collection.find({"job_id": {"$in": job_ids}})
+            list_cursor = list(result)
+            serialized_result = []
+            for item in list_cursor:
+                item['_id'] = str(item['_id'])  # Convert ObjectId to string
+                serialized_result.append(item)
+
+            if serialized_result:
+                return Response({"message": "NLP RUN SUCCESSFULL", "nlpresponce": nlpResponce, "matchData": serialized_result,
+                                "success": True}, status=status.HTTP_200_OK)
+            else:
+                print("No documents found")
+                return Response({"message": "NLP RUN SUCCESSFULL", "nlpresponce": nlpResponce, "matchData": serialized_result,
+                                "success": True}, status=status.HTTP_200_OK)
+
+            # result = self.collection.find(query, projection)
+            # list_cursor = list(result)
+            # serialized_result = []
+            # for item in list_cursor:
+            #     item['_id'] = str(item['_id'])  # Convert ObjectId to string
+            #     serialized_result.append(item)
+
+            # if serialized_result:
+            #     return Response(serialized_result, status=status.HTTP_200_OK)
+            # else:
+            #     print("No documents found")
+            #     return Response([], status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+          
  
