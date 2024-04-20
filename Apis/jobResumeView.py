@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from NLP_Model.nlp_for_find_job import findtoptenjobforresume
+from NLP_Model.nlp_for_find_resume import findtoptenresumeforjob
 from db.mongo import db
 import bcrypt
 from services.commonService import *
@@ -247,6 +248,68 @@ class getTopTenJobPost(APIView):
 
             print(f"data", job_ids)
             result = self.collection.find({"job_id": {"$in": job_ids}})
+            list_cursor = list(result)
+            serialized_result = []
+            for item in list_cursor:
+                item['_id'] = str(item['_id'])  # Convert ObjectId to string
+                serialized_result.append(item)
+
+            if serialized_result:
+                return Response({"message": "NLP RUN SUCCESSFULL", "nlpresponce": nlpResponce, "matchData": serialized_result,
+                                "success": True}, status=status.HTTP_200_OK)
+            else:
+                print("No documents found")
+                return Response({"message": "NLP RUN SUCCESSFULL", "nlpresponce": nlpResponce, "matchData": serialized_result,
+                                "success": True}, status=status.HTTP_200_OK)
+
+            # result = self.collection.find(query, projection)
+            # list_cursor = list(result)
+            # serialized_result = []
+            # for item in list_cursor:
+            #     item['_id'] = str(item['_id'])  # Convert ObjectId to string
+            #     serialized_result.append(item)
+
+            # if serialized_result:
+            #     return Response(serialized_result, status=status.HTTP_200_OK)
+            # else:
+            #     print("No documents found")
+            #     return Response([], status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"message": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+          
+ 
+
+
+ 
+class getTopTenJobResume(APIView):
+      def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+      def post(self,request):
+        try:
+           
+            self.collection = db["resume"]
+            job_id = request.data.get('job_id')
+            # Execute MongoDB query with projection
+            # result = self.collection.find({}, {})
+            # listCursor = list(result)
+            print("job_id",job_id)
+            if not job_id:
+                return Response({"message": "Job_id For Run NLP"}, status=status.HTTP_400_BAD_REQUEST)
+            # result = self.collection.find({}, {})
+
+
+            
+            nlpResponce=findtoptenresumeforjob(job_id)
+            print(nlpResponce)
+            if nlpResponce and nlpResponce['success']:
+               resume_ids = [entry['resume_id'] for entry in nlpResponce['result'] if entry.get('resume_id')]
+            else:
+                return Response({"message": "NLP RUN UNSUCCESSFULL", "nlpresponce": nlpResponce, "success": False},
+                                status=status.HTTP_200_OK)
+
+            print(f"data", resume_ids)
+            result = self.collection.find({"resume_id": {"$in": resume_ids}})
             list_cursor = list(result)
             serialized_result = []
             for item in list_cursor:
