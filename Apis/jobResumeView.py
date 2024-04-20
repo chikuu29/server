@@ -356,7 +356,7 @@ class syncAllResumeJobs(APIView):
             getallJob.get(self, request)
             return Response({"message": "synced successfully",'success':True}, status=status.HTTP_200_OK)
         except Exception as e:
-            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)  
+            return Response({"message": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)  
  
           
  
