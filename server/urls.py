@@ -23,5 +23,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('Apis.urls')),
     path('getAllResume',getallResume.as_view()),
-    path('getallJob',getallJob.as_view())
+    path('getallJob',getallJob.as_view()),
+    path('syncAllResumeJobs',syncAllResumeJobs.as_view())
 ]

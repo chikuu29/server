@@ -6,6 +6,7 @@ from NLP_Model.nlp_for_find_job import findtoptenjobforresume
 from NLP_Model.nlp_for_find_resume import findtoptenresumeforjob
 from db.mongo import db
 import bcrypt
+import threading
 from services.commonService import *
  
  
@@ -177,6 +178,10 @@ class getallResume(APIView):
                 serialized_result.append(item)
 
             if serialized_result:
+                path ='./csv_files/resume.csv',
+                columnsKeys = ["name", "objective", "education", "work_experience", "certifications", "skills", "languages", "interests", "references", "resume_id", "email", "resumeCreatedBy", "createdAt"]
+                csv_thread = threading.Thread(target=jsonTocsv, args=(serialized_result,path,columnsKeys))
+                csv_thread.start()
                 return Response(serialized_result, status=status.HTTP_200_OK)
             else:
                 print("No documents found")
@@ -206,6 +211,10 @@ class getallJob(APIView):
                 serialized_result.append(item)
 
             if serialized_result:
+                path ='./csv_files/job.csv',
+                columnsKeys = ["job_posting", "location", "position_type", "project_title", "project_description", "key_responsibilities", "qualifications", "application_process", "university_name", "job_id", "createdAt", "createdBy"]
+                csv_thread = threading.Thread(target=jsonTocsv, args=(serialized_result,path,columnsKeys))
+                csv_thread.start()
                 return Response(serialized_result, status=status.HTTP_200_OK)
             else:
                 print("No documents found")
@@ -338,5 +347,16 @@ class getTopTenJobResume(APIView):
             #     return Response([], status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"message": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+
+class syncAllResumeJobs(APIView):
+    def get(self, request):
+        try:
+            getallResume.get(self, request)
+            getallJob.get(self, request)
+            return Response({"message": "synced successfully",'success':True}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": "An error occurred: " + str(e)}, status=status.HTTP_400_BAD_REQUEST)  
+ 
           
  
