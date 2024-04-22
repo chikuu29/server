@@ -10,8 +10,8 @@ urlpatterns = [
     path('dynaQuery', JobResumeDynamicQuery.as_view(), name='dynaQuery'),
     path('dynaAggregation', JobResumeAggregationQuery.as_view(), name='dynaAggregation'),
     path('getJobResumePost', getJobPost.as_view(), name='getJobResumePost'),
-    path('nlpfindtopjobs',getTopTenJobPost.as_view(),name="nlpfindtopjobs"),
-    path('nlpfindtopresumes',getTopTenJobResume.as_view(),name="nlpfindtopresumes"),
+    # path('nlpfindtopjobs',getTopTenJobPost.as_view(),name="nlpfindtopjobs"),
+    # path('nlpfindtopresumes',getTopTenJobResume.as_view(),name="nlpfindtopresumes"),
     path('session',checkLoginStatus.as_view(),name='session'),
 ]
 
