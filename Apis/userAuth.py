@@ -53,7 +53,7 @@ class LogoutView(APIView):
             }, status=status.HTTP_200_OK )
         response.delete_cookie(
             key="jwt_token",
-            samesite='None',
+            samesite='Lax',
             path="/"
             )
         return response
