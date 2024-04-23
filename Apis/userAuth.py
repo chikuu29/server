@@ -97,7 +97,7 @@ class LoginAPIView(APIView):
                             value=str(token),
                             httponly=True,
                             samesite= 'Lax',
-                            secure=False,
+                            secure=True,
                             max_age=timedelta(days=2).total_seconds(),  # Set cookie expiration time
                             path='/'  # Set a specific path for the refresh token cookie
                         )
@@ -106,7 +106,7 @@ class LoginAPIView(APIView):
                             value=str(user['role']),
                             samesite='Lax',
                             httponly=True,
-                            secure=False,
+                            secure=True,
                             max_age=timedelta(days=2).total_seconds(),  # Set cookie expiration time
                             path='/'  # Set a specific path for the refresh token cookie
                         )
