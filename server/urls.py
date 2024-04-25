@@ -27,6 +27,9 @@ urlpatterns = [
     # path('syncAllResumeJobs',syncAllResumeJobs.as_view())
      path('api/', include([
         path('auth/', include('Apis.urls')),
+         path('dynaQuery', JobResumeDynamicQuery.as_view(), name='dynaQuery'),
+         path('dynaAggregation', JobResumeAggregationQuery.as_view(), name='dynaAggregation'),
+         path('getJobResumePost', getJobPost.as_view(), name='getJobResumePost'),
         path('getAllResume/', getallResume.as_view()),
         path('getallJob/', getallJob.as_view()),
         path('syncAllResumeJobs/', syncAllResumeJobs.as_view())
