@@ -96,7 +96,7 @@ class LoginAPIView(APIView):
                             key='jwt_token',
                             value=str(token),
                             httponly=True,
-                            samesite= 'None',
+                            samesite= 'Lax',
                             secure=False,
                             max_age=timedelta(days=2).total_seconds(),  # Set cookie expiration time
                             path='/'  # Set a specific path for the refresh token cookie
