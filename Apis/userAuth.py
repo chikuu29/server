@@ -53,7 +53,7 @@ class LogoutView(APIView):
             }, status=status.HTTP_200_OK )
         response.delete_cookie(
             key="jwt_token",
-            samesite='None',
+             samesite= 'Lax',
             path="/"
             )
         return response
@@ -104,7 +104,7 @@ class LoginAPIView(APIView):
                     response.set_cookie(
                             key='role',
                             value=str(user['role']),
-                            samesite='None',
+                             samesite= 'Lax',
                             httponly=True,
                             secure=True,
                             max_age=timedelta(days=2).total_seconds(),  # Set cookie expiration time
