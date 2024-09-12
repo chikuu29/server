@@ -28,7 +28,7 @@ DEBUG = True
 # settings.py
 CORS_ALLOW_CREDENTIALS =True
 CORS_ORIGIN_ALLOW_ALL =True
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['https://healhealthtask.onrender.com']
 
 
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+     'corsheaders.middleware.CorsMiddleware',  # CORS middleware
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,8 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'middleware.customMiddleware.UserValidationMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'middleware.customMiddleware.UserValidationMiddleware'
   
 ]
 
